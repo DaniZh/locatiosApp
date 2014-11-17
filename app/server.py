@@ -91,8 +91,15 @@ def delete_location(location_id):
     return make_json_response({'message': 'OK'})
 
 def get_collection():
-    conn = pymongo.Connection('localhost:27017', **app.conn_args)
-    return conn[app.db_name].locations
+    uri = ''
+    if 'MONGOLAB_URI' in os.environ:
+        uri = os.environ['MONGOLAB_URI']
+        db_name = uri[uri.rfind('/') + 1:]
+    else:
+        uri = 'localhost:27017'
+        db_name = app.db_name
+    conn = pymongo.Connection(uri, **app.conn_args)
+    return conn[db_name].locations
 
 if __name__ == '__main__':
     import optparse
